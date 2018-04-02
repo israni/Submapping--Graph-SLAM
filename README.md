@@ -13,5 +13,5 @@ Final project:
 
 TODO (all):
 - Install/learn GTSAM
-- Understand GraphSLAM
-- Figure out how to apply submapping to this problem
+- Understand GraphSLAM & figure out how to apply submapping to this problem
+- Write our own factor for the noise matrix (because it's 2x3)

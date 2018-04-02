@@ -20,6 +20,12 @@ def str_to_float(arr):
 		arr1[i] = float(arr[i])
 	return np.array(arr1)
 
+def matrix_2x3(arr):
+	arr1 = [0] * 6
+	for i in range(0,6):
+		arr1[i] = float(arr[i])
+	return np.reshape(arr1,(2,3))
+
 
 def main():
 	graph = gtsam.NonlinearFactorGraph()
@@ -39,23 +45,24 @@ def main():
 				node1 = int(line_split[1])
 				node2 = int(line_split[2])
 				x, y, theta = make_pose(line_split[3:6])
-				noise = gtsam.noiseModel.Diagonal.Sigmas(str_to_float(line_split[6:]))
-				graph.add(gtsam.BetweenFactorPose2(node1, node2, gtsam.Pose2(x, y, theta), noise))
+				H = matrix_2x3(line_split[6:])
+				# noise = gtsam.noiseModel.Diagonal.Sigmas(str_to_float(line_split[6:]))
+				# graph.add(gtsam.BetweenFactorPose2(node1, node2, gtsam.Pose2(x, y, theta), noise))
 	f.close()
 
 	initialEstimate.print("\nInitial Estimate:\n")
 
-	parameters = gtsam.GaussNewtonParams()
+	# parameters = gtsam.GaussNewtonParams()
 
-	# Stop iterating once the change in error between steps is less than this value
-	parameters.relativeErrorTol = 1e-5
-	# Do not perform more than N iteration steps
-	parameters.maxIterations = 100
-	# Create the optimizer ...
-	optimizer = gtsam.GaussNewtonOptimizer(graph, initialEstimate, parameters)
-	# ... and optimize
-	result = optimizer.optimize()
-	result.print("Final Result:\n")
+	# # Stop iterating once the change in error between steps is less than this value
+	# parameters.relativeErrorTol = 1e-5
+	# # Do not perform more than N iteration steps
+	# parameters.maxIterations = 100
+	# # Create the optimizer ...
+	# optimizer = gtsam.GaussNewtonOptimizer(graph, initialEstimate, parameters)
+	# # ... and optimize
+	# result = optimizer.optimize()
+	# result.print("Final Result:\n")
 
 
 
