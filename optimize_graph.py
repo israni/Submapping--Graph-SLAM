@@ -43,6 +43,20 @@ def main():
 				graph.add(gtsam.BetweenFactorPose2(node1, node2, gtsam.Pose2(x, y, theta), noise))
 	f.close()
 
+	initialEstimate.print("\nInitial Estimate:\n")
+
+	parameters = gtsam.GaussNewtonParams()
+
+	# Stop iterating once the change in error between steps is less than this value
+	parameters.relativeErrorTol = 1e-5
+	# Do not perform more than N iteration steps
+	parameters.maxIterations = 100
+	# Create the optimizer ...
+	optimizer = gtsam.GaussNewtonOptimizer(graph, initialEstimate, parameters)
+	# ... and optimize
+	result = optimizer.optimize()
+	result.print("Final Result:\n")
+
 
 
 if __name__ == "__main__":
