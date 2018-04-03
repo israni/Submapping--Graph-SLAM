@@ -20,11 +20,30 @@ def str_to_float(arr):
 		arr1[i] = float(arr[i])
 	return np.array(arr1)
 
+
+# arr: array with 6 elements (noise matrix)
+# converts arr to a 2x3 matrix
 def matrix_2x3(arr):
 	arr1 = [0] * 6
 	for i in range(0,6):
 		arr1[i] = float(arr[i])
 	return np.reshape(arr1,(2,3))
+
+# arr: array with 6 elements (noise matrix)
+# converts arr to 3x3 information matrix
+def create_information_matrix(arr):
+	arr1 = [0] * 9
+	arr1[0] = float(arr[0])
+	arr1[1] = float(arr[1])
+	arr1[2] = float(arr[2])
+	arr1[3] = float(arr[1])
+	arr1[4] = float(arr[3])
+	arr1[5] = float(arr[4])
+	arr1[6] = float(arr[2])
+	arr1[7] = float(arr[4])
+	arr1[8] = float(arr[5])
+	arr1 = np.reshape(arr1,(3,3))
+	return np.matrix(arr1)
 
 
 def main():
@@ -39,30 +58,29 @@ def main():
 			line_split = line.split()
 			if line_split[0] == 'VERTEX_SE2':
 				node = int(line_split[1])
-				x, y, theta = make_pose(line_split[2:])
-				initialEstimate.insert(node, gtsam.Pose2(x, y, theta))
+				x, y, th = make_pose(line_split[2:])
+				initialEstimate.insert(node, gtsam.Pose2(x, y, th))
 			elif line_split[0] == 'EDGE_SE2':
 				node1 = int(line_split[1])
 				node2 = int(line_split[2])
-				x, y, theta = make_pose(line_split[3:6])
-				H = matrix_2x3(line_split[6:])
-				# noise = gtsam.noiseModel.Diagonal.Sigmas(str_to_float(line_split[6:]))
-				# graph.add(gtsam.BetweenFactorPose2(node1, node2, gtsam.Pose2(x, y, theta), noise))
+				dx, dy, dth = make_pose(line_split[3:6])
+				noise = gtsam.noiseModel.Gaussian.Information(create_information_matrix(line_split[6:]))
+				graph.add(gtsam.BetweenFactorPose2(node1, node2, gtsam.Pose2(dx, dy, dth), noise))
 	f.close()
 
-	initialEstimate.print("\nInitial Estimate:\n")
+	# initialEstimate.print("\nInitial Estimate:\n")
 
-	# parameters = gtsam.GaussNewtonParams()
+	parameters = gtsam.GaussNewtonParams()
 
-	# # Stop iterating once the change in error between steps is less than this value
-	# parameters.relativeErrorTol = 1e-5
-	# # Do not perform more than N iteration steps
-	# parameters.maxIterations = 100
-	# # Create the optimizer ...
-	# optimizer = gtsam.GaussNewtonOptimizer(graph, initialEstimate, parameters)
-	# # ... and optimize
-	# result = optimizer.optimize()
-	# result.print("Final Result:\n")
+	# Stop iterating once the change in error between steps is less than this value
+	parameters.relativeErrorTol = 1e-5
+	# Do not perform more than N iteration steps
+	parameters.maxIterations = 100
+	# Create the optimizer ...
+	optimizer = gtsam.GaussNewtonOptimizer(graph, initialEstimate, parameters)
+	# ... and optimize
+	result = optimizer.optimize()
+	result.print("Final Result:\n")
 
 
 
