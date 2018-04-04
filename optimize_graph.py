@@ -2,6 +2,7 @@ from __future__ import print_function
 import gtsam
 import math
 import numpy as np
+import matplotlib.pyplot as plt
 
 # arr: string array containing pose values [x, y, theta]
 # returns x, y, and theta as floats
@@ -29,7 +30,6 @@ def create_information_matrix(arr):
 	# print(np.matrix(arr1))
 	return np.matrix(arr1)
 
-# def Vector3(x, y, z): return np.array([x, y, z])
 
 
 def main():
@@ -37,7 +37,7 @@ def main():
 	initialEstimate = gtsam.Values()
 
 	priorNoise = gtsam.noiseModel.Diagonal.Sigmas(np.array([0.3, 0.3, 0.10]))
-	graph.add(gtsam.PriorFactorPose2(1, gtsam.Pose2(0, 0, 0), priorNoise))
+	graph.add(gtsam.PriorFactorPose2(0, gtsam.Pose2(0, 0, 0), priorNoise))
 
 	# read data from .g2o file
 	# and initialize nodes/edges
@@ -72,13 +72,20 @@ def main():
 	result.print("Final Result:\n")
 
 	keys = result.keys()
-	values = []
-	print(result.size())
-	# for i in range(0,len(keys)):
-		# print(result.at(key[i]))
-		# print(result.exists(key[i]))
-
-
+	# x = []
+	# y = []
+	# theta = []
+	for key in keys:
+		print(key)
+		if result.exists(key):
+			print(result.atPose2(key))
+		# x.append(float(result.atPose2(key).x()))
+		# y.append(float(result.atPose2(key).y()))
+		# theta.append(float(result.atPose2(key).theta()))
+	
+	# fig = plt.figure()
+	# fig.plot(x,y)
+	# fig.show()
 
 if __name__ == "__main__":
     main()
