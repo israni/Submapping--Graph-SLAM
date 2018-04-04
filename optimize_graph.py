@@ -8,26 +8,9 @@ import numpy as np
 def make_pose(arr):
 	x = float(arr[0])
 	y = float(arr[1])
-	theta = float(arr[2])
-	return x, y, theta
+	th = float(arr[2])
+	return x, y, th
 
-
-# arr: string array to convert to floats
-# converts values in arr to floats and returns as np.array
-def str_to_float(arr):
-	arr1 = [0] * len(arr)
-	for i in range(0,len(arr)):
-		arr1[i] = float(arr[i])
-	return np.array(arr1)
-
-
-# arr: array with 6 elements (noise matrix)
-# converts arr to a 2x3 matrix
-def matrix_2x3(arr):
-	arr1 = [0] * 6
-	for i in range(0,6):
-		arr1[i] = float(arr[i])
-	return np.reshape(arr1,(2,3))
 
 # arr: array with 6 elements (noise matrix)
 # converts arr to 3x3 information matrix
@@ -43,12 +26,18 @@ def create_information_matrix(arr):
 	arr1[7] = float(arr[4])
 	arr1[8] = float(arr[5])
 	arr1 = np.reshape(arr1,(3,3))
+	# print(np.matrix(arr1))
 	return np.matrix(arr1)
+
+# def Vector3(x, y, z): return np.array([x, y, z])
 
 
 def main():
 	graph = gtsam.NonlinearFactorGraph()
 	initialEstimate = gtsam.Values()
+
+	priorNoise = gtsam.noiseModel.Diagonal.Sigmas(np.array([0.3, 0.3, 0.10]))
+	graph.add(gtsam.PriorFactorPose2(1, gtsam.Pose2(0, 0, 0), priorNoise))
 
 	# read data from .g2o file
 	# and initialize nodes/edges
@@ -81,6 +70,13 @@ def main():
 	# ... and optimize
 	result = optimizer.optimize()
 	result.print("Final Result:\n")
+
+	keys = result.keys()
+	values = []
+	print(result.size())
+	# for i in range(0,len(keys)):
+		# print(result.at(key[i]))
+		# print(result.exists(key[i]))
 
 
 
