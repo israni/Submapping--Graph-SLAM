@@ -15,7 +15,7 @@ priorNoise = noiseModel.Diagonal.Sigmas([0.3; 0.3; 0.1]);
 graph.add(PriorFactorPose2(1, Pose2(0, 0, 0), priorNoise)); % add directly to graph
 
 while ischar(input_line)
-    disp(input_line)
+    %disp(input_line)
     split_line = split(input_line);
     
     %% ADD VERTICES TO GRAPH - INITIAL ESTIMATE%%
@@ -37,15 +37,19 @@ while ischar(input_line)
         dy = odometry(2);
         dtheta = odometry(3);
  
-        information_matrix = zeros(3);
         information_matrix(1,1)= str2num(split_line{7});
         information_matrix(1,2)= str2num(split_line{8});
         information_matrix(1,3)= str2num(split_line{9});
+        information_matrix(2,1)= str2num(split_line{8});
         information_matrix(2,2)= str2num(split_line{10});
         information_matrix(2,3)= str2num(split_line{11});
+        information_matrix(3,1)= str2num(split_line{9});
+        information_matrix(3,2)= str2num(split_line{11});
         information_matrix(3,3)= str2num(split_line{12});
         
-        model = noiseModel.Gaussian.SqrtInformation(information_matrix);
+        chol_information_matrix = chol(information_matrix);
+
+        model = noiseModel.Gaussian.SqrtInformation(chol_information_matrix);
         graph.add(BetweenFactorPose2(vertex_id_1, vertex_id_2, Pose2(dx, dy, dtheta), model));
     end
     
@@ -58,9 +62,21 @@ fclose(data_file);
 graph.print(sprintf('\nFactor graph:\n'));
 
 %% Optimize using Levenberg-Marquardt optimization with an ordering from colamd
-optimizer = LevenbergMarquardtOptimizer(graph, initialEstimate);
-result = optimizer.optimizeSafely();
-result.print(sprintf('\nFinal result:\n'));
+%optimizer = LevenbergMarquardtOptimizer(graph, initialEstimate);
+%result = optimizer.optimizeSafely();
+%result.print(sprintf('\nFinal result:\n'));
+
+	parameters = GaussNewtonParams();
+
+%	# Stop iterating once the change in error between steps is less than this value
+	parameters.setRelativeErrorTol(1e-5);
+%	# Do not perform more than N iteration steps
+	parameters.setMaxIterations(100);
+%	# Create the optimizer ...
+	optimizer = gtsam.GaussNewtonOptimizer(graph, initialEstimate, parameters);
+%	# ... and optimize
+	result = optimizer.optimize();
+    result.print(sprintf('\nFinal result:\n'));
 
 %% Plot Covariance Ellipses
 cla;
