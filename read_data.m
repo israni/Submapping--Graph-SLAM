@@ -67,7 +67,8 @@ end
 fclose(data_file);
 
 %% Add prior
-priorNoise = noiseModel.Gaussian.SqrtInformation(noise);
+% priorNoise = noiseModel.Gaussian.SqrtInformation(noise);
+priorNoise = noiseModel.Diagonal.Sigmas([0.3; 0.3; 0.1]);
 graph.add(PriorFactorPose2(0, Pose2(0, 0, 0), priorNoise)); % add directly to graph
 
 graph.print(sprintf('\nFactor graph:\n'));
@@ -92,7 +93,7 @@ result.print(sprintf('\nFinal result:\n'));
 %% Plot Covariance Ellipses
 cla;
 hold on  
-plot([result.at(5).x;result.at(2).x],[result.at(5).y;result.at(2).y],'r-');
+% plot([result.at(5).x;result.at(2).x],[result.at(5).y;result.at(2).y],'r-');
 % marginals = Marginals(graph, result);
 
 % plot2DTrajectory(result, [], marginals);
