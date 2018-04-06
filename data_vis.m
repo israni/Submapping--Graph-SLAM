@@ -1,3 +1,5 @@
+load('intel_data.mat')
+
 figure;
 plot(vert.x(1:1227),vert.y(1:1227));
 hold on;
