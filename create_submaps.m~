@@ -151,18 +151,15 @@ optimizer = gtsam.LevenbergMarquardtOptimizer(separator_graph, separator_estimat
 result = optimizer.optimizeSafely();
 
 keys = KeyVector(result.keys());
-separator_results = zeros(4,keys.size());
+optimizer_results = zeros(4,keys.size());
 results_idx = 1;
 for j = 0:keys.size()-1
     key = keys.at(j);
-    separator_results(1,results_idx) = key;
-    separator_results(2,results_idx) = result.at(key).x();
-    separator_results(3,results_idx) = result.at(key).y();
-    separator_results(4,results_idx) = result.at(key).theta();
-    results_idx = results_idx + 1;
+    optimizer_results(1,results_idx) = key;
+    optimizer_results(2,r
 end
-result.print(sprintf('\nFinal result:\n'));
-% optimizer.error()
+% result.print(sprintf('\nFinal result:\n'));
+optimizer.error()
 
 figure(2);
 plot2DTrajectory(result);
