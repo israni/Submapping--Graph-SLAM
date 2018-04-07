@@ -114,7 +114,7 @@ parameters = DoglegParams();
 parameters.setRelativeErrorTol(1e-5);
 parameters.setMaxIterations(1000);
 
-submap_results = zeros(4,num_points_total);
+all_submap_results = zeros(4,num_points_total);
 results_idx = 1;
 
 % optimize and plot submaps
@@ -128,10 +128,10 @@ for i = 1:num_submaps
     % store submap results in matrix
     for j = 0:keys.size()-1
         key = keys.at(j);
-        submap_results(1,results_idx) = key;
-        submap_results(2,results_idx) = result.at(key).x();
-        submap_results(3,results_idx) = result.at(key).y();
-        submap_results(4,results_idx) = result.at(key).theta();
+        all_submap_results(1,results_idx) = key;
+        all_submap_results(2,results_idx) = result.at(key).x();
+        all_submap_results(3,results_idx) = result.at(key).y();
+        all_submap_results(4,results_idx) = result.at(key).theta();
         results_idx = results_idx + 1;
     end
     
@@ -151,14 +151,14 @@ optimizer = gtsam.LevenbergMarquardtOptimizer(separator_graph, separator_estimat
 result = optimizer.optimizeSafely();
 
 keys = KeyVector(result.keys());
-separator_results = zeros(4,keys.size());
+all_separator_results = zeros(4,keys.size());
 results_idx = 1;
 for j = 0:keys.size()-1
     key = keys.at(j);
-    separator_results(1,results_idx) = key;
-    separator_results(2,results_idx) = result.at(key).x();
-    separator_results(3,results_idx) = result.at(key).y();
-    separator_results(4,results_idx) = result.at(key).theta();
+    all_separator_results(1,results_idx) = key;
+    all_separator_results(2,results_idx) = result.at(key).x();
+    all_separator_results(3,results_idx) = result.at(key).y();
+    all_separator_results(4,results_idx) = result.at(key).theta();
     results_idx = results_idx + 1;
 end
 result.print(sprintf('\nFinal result:\n'));
