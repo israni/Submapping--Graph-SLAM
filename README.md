@@ -6,10 +6,9 @@ Contact Info:
 - Sagar: (917)849-9078
 
 Final project:
-- Switching from ap_hill_07b dataset to Intel dataset (https://lucacarlone.mit.edu/datasets/)
+- Using Intel dataset (https://lucacarlone.mit.edu/datasets/)
 	- Comes in data formatted as nodes and edges
-- Use GTSAM (MATLAB) to apply SAM to graph data -- back end
-- Do feature extraction, data association, loop closure -- front end
+- Use GTSAM (MATLAB) to optimize graph SLAM and apply submapping
 
 TODO (all):
 - Install/learn GTSAM
