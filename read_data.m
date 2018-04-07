@@ -12,7 +12,7 @@ initialEstimate = Values;
 
 noise = zeros(3);
 
-numPoints = 810;
+numPoints = 1200;
 
 while ischar(input_line)
     %disp(input_line)
@@ -56,6 +56,8 @@ while ischar(input_line)
             end
 
             model = noiseModel.Gaussian.SqrtInformation(chol_information_matrix);
+            
+%            model = noiseModel.Gaussian.SqrtInformation(eye(3));
             graph.add(BetweenFactorPose2(vertex_id_1, vertex_id_2, Pose2(dx, dy, dtheta), model));
         end
     end
