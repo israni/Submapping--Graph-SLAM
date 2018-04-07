@@ -5,7 +5,7 @@ import gtsam.*
 
 %% Set these variables
 num_submaps = 4;
-num_points_total = 810; % total # of points in dataset
+num_points_total = 900; % total # of points in dataset
 num_points_submap = ceil(num_points_total / num_submaps);
 separator_nodes = zeros(1,num_points_total);
 
@@ -121,16 +121,20 @@ parameters = DoglegParams();
 parameters.setRelativeErrorTol(1e-5);
 parameters.setMaxIterations(1000);
 
-% for i = 1:num_submaps
-%     optimizer = gtsam.DoglegOptimizer(graph(i), initial_estimate(i), parameters);
-%     result = optimizer.optimizeSafely();
+% for testing purposes
+figure(1)
+for i = 1:num_submaps
+    optimizer = gtsam.DoglegOptimizer(graph(i), initial_estimate(i), parameters);
+    result = optimizer.optimizeSafely();
     
-%     figure(i);
-%     plot2DTrajectory(result);
-%     axis equal
-%     axis tight
-%     view(2)
-% end
+    subplot(ceil(num_submaps/2),ceil(num_submaps/2),i);
+    plot2DTrajectory(result);
+    t = sprintf("Submap %i",i);
+    title(t);
+    axis equal
+    axis tight
+    view(2)
+end
 
 separator_graph.print(sprintf('\nFactor graph:\n'));
 parameters = LevenbergMarquardtParams();
@@ -138,7 +142,7 @@ optimizer = gtsam.LevenbergMarquardtOptimizer(separator_graph, separator_estimat
 result = optimizer.optimizeSafely();
 result.print(sprintf('\nFinal result:\n'));
 
-figure(1);
+figure(2);
 plot2DTrajectory(result);
 axis equal
 axis tight
