@@ -169,3 +169,6 @@ plot2DTrajectory(result);
 axis equal
 axis tight
 view(2)
+
+save('all_submap_results.mat','all_submap_results');
+save('all_separator_results.mat','all_separator_results');
