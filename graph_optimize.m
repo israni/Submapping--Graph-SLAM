@@ -4,7 +4,7 @@ close all;
 import gtsam.*
 
 %% Set these variables
-num_submaps = 4;
+num_submaps = 2;
 num_points_total = 1200; % total # of points in dataset
 num_points_submap = ceil(num_points_total / num_submaps);
 separator_nodes = zeros(1,num_points_total);
@@ -116,13 +116,15 @@ parameters.setMaxIterations(1000);
 
 all_submap_results = zeros(4,num_points_total);
 results_idx = 1;
-
+time=0;
 % optimize and plot submaps
 figure(1)
 for i = 1:num_submaps
+    tic
     optimizer = gtsam.DoglegOptimizer(graph(i), initial_estimate(i), parameters);
     result = optimizer.optimizeSafely();
-    
+    variable= toc
+    time = time + variable;
     keys = KeyVector(result.keys());
     
     % store submap results in matrix
@@ -135,7 +137,11 @@ for i = 1:num_submaps
         results_idx = results_idx + 1;
     end
     
-    subplot(ceil(num_submaps/2),ceil(num_submaps/2),i);
+    if (num_submaps == 2)
+        subplot(ceil(num_submaps/2),2,i);
+    else
+        subplot(ceil(num_submaps/2),ceil(num_submaps/2),i);
+    end
     plot2DTrajectory(result);
     title_str = sprintf("Submap %i",i);
     title(title_str);
@@ -226,13 +232,13 @@ while ischar(input_line)
             submap_idx_1 = floor(vertex_id_1 / num_points_submap) + 1;
             submap_idx_2 = floor(vertex_id_2 / num_points_submap) + 1;
             if (submap_idx_1 == submap_idx_2) % non-boundary node
-                model = noiseModel.Gaussian.SqrtInformation(1*eye(3));
+                model = noiseModel.Gaussian.SqrtInformation([1 0 0; 0 1 0; 0 0 1] );
                 %dx = all_submap_results(2,vertex_id_2+1)-all_submap_results(2,vertex_id_1+1);
                 %dy = all_submap_results(3,vertex_id_2+1)-all_submap_results(2,vertex_id_1+1);
                 %dtheta = all_submap_results(4,vertex_id_2+1)-all_submap_results(2,vertex_id_1+1);
-                graph_new.add(BetweenFactorPose2(vertex_id_1, vertex_id_2, Pose2(dx, dy, dtheta), model));
+                graph_new.add(BetweenFactorPose2(vertex_id_1, vertex_id_2, Pose2(dx, dy, minimizedAngle(dtheta)), model));
             else % boundary node
-                graph_new.add(BetweenFactorPose2(vertex_id_1, vertex_id_2, Pose2(dx, dy, dtheta), model));
+                graph_new.add(BetweenFactorPose2(vertex_id_1, vertex_id_2, Pose2(dx, dy, minimizedAngle(dtheta)), model));
             end                  
                 
         end
@@ -265,8 +271,8 @@ result = optimizer.optimizeSafely();
 %result.print(sprintf('\nFinal result:\n'));
 
 %% Plot Covariance Ellipses
-cla;
-hold on  
+%cla;
+%hold on  
 % plot([result.at(5).x;result.at(2).x],[result.at(5).y;result.at(2).y],'r-');
 % marginals = Marginals(graph, result);
 figure,
