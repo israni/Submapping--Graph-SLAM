@@ -3,7 +3,7 @@ close all;
 
 import gtsam.*
 
-data_file = fopen('input_INTEL_g2o.g2o');
+data_file = fopen('INTEL_P_toro.graph');
 input_line = fgetl(data_file);
 
 %% Create graph container and add factors to it
@@ -21,7 +21,7 @@ while ischar(input_line)
     split_line = strsplit(input_line);
     
     %% ADD VERTICES TO GRAPH - INITIAL ESTIMATE%%
-    if (strcmp(split_line{1},'VERTEX_SE2'))
+    if (strcmp(split_line{1},'VERTEX2'))
         vertex_id = str2num(split_line{2});
         if (vertex_id <= numPoints)
             vertex_location = ([str2num(split_line{3}),str2num(split_line{4}),str2num(split_line{5})]);
@@ -36,7 +36,7 @@ while ischar(input_line)
     end
     
     %% ADD EDGES TO GRAPH - ODOMETRY AND POSE CONTRAINTS %%
-    if (strcmp(split_line{1},'EDGE_SE2'))
+    if (strcmp(split_line{1},'EDGE2'))
         vertex_id_1 = str2num(split_line{2});
         vertex_id_2 = str2num(split_line{3});
         if (vertex_id_1 <= numPoints && vertex_id_2 <= numPoints)
@@ -45,15 +45,15 @@ while ischar(input_line)
             dy = odometry(2);
             dtheta = odometry(3);
 
-            information_matrix(1,1)= str2num(split_line{7});
-            information_matrix(1,2)= str2num(split_line{8});
-            information_matrix(1,3)= str2num(split_line{9});
-            %information_matrix(2,1)= str2num(split_line{8});
-            information_matrix(2,2)= str2num(split_line{10});
-            information_matrix(2,3)= str2num(split_line{11});
-            %information_matrix(3,1)= str2num(split_line{9});
-            %information_matrix(3,2)= str2num(split_line{11});
-            information_matrix(3,3)= str2num(split_line{12});
+            information_matrix(1,1)= str2double(split_line{7});
+            information_matrix(1,2)= str2double(split_line{8});
+            information_matrix(2,2)= str2double(split_line{9});
+            information_matrix(3,3)= str2double(split_line{10});
+            information_matrix(1,3)= str2double(split_line{11});
+            information_matrix(2,3)= str2double(split_line{12});
+            information_matrix(2,1)= str2double(split_line{8});
+            information_matrix(3,1)= str2double(split_line{11});
+            information_matrix(3,2)= str2double(split_line{12});
 
             chol_information_matrix = sqrtm(information_matrix);
             if (noise(1,1) == 0)
