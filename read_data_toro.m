@@ -4,8 +4,8 @@ close all;
 import gtsam.*
 
 %data_file = fopen('INTEL_P_toro.graph'); % INTEL
-data_file = fopen('M3500_P_toro.graph'); % M3500
-%data_file = fopen ('CSAIL_P_toro.graph');                       % CSAIL MIT
+%data_file = fopen('M3500_P_toro.graph'); % M3500
+data_file = fopen ('CSAIL_P_toro.graph');                       % CSAIL MIT
 %data_file = fopen('M10000_P_toro.graph');
 
 input_line = fgetl(data_file);
@@ -16,9 +16,9 @@ initialEstimate = Values;
 
 noise = zeros(3);
 
-% numPoints = 1200;       % INTEL
- numPoints = 3500;       % M3500
-% numPoints = 1044;         % CSAIL MIT
+%numPoints = 1200;       % INTEL
+%numPoints = 3500;       % M3500
+numPoints = 1044;         % CSAIL MIT
 %numPoints = 10000;
 
 x_all = [];

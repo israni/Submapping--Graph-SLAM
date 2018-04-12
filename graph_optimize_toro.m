@@ -4,9 +4,9 @@ close all;
 import gtsam.*
 
 %% Set these variables
-num_submaps = 10;
-%num_points_total = 1200; % total # of points in dataset        INTEL
-num_points_total = 3500; % total # of points in dataset          M3500
+num_submaps = 6;
+num_points_total = 1200; % total # of points in dataset        INTEL
+%num_points_total = 3500; % total # of points in dataset          M3500
 %num_points_total = 1044; % total # of points in dataset          CSAIL MIT
 %num_points_total = 10000; % total # of points in dataset         M10000
 
@@ -28,8 +28,8 @@ base_vertex = -1 * ones(1,num_submaps);
 % noise = zeros(3);
 
 %% Parse data and add factors
-%data_file = fopen('INTEL_P_toro.graph');                      % INTEL
-data_file = fopen ('M3500_P_toro.graph');                     % M3500
+data_file = fopen('INTEL_P_toro.graph');                      % INTEL
+%data_file = fopen ('M3500_P_toro.graph');                     % M3500
 %data_file = fopen ('CSAIL_P_toro.graph');                     % CSAIL MIT
 %data_file= fopen('M10000_P_toro.graph');                      % M10000
 
@@ -190,8 +190,8 @@ end
 
 
 %% Parse data and add factors
-%data_file = fopen('INTEL_P_toro.graph');                       % INTEL
-data_file = fopen ('M3500_P_toro.graph');                      % M3500
+data_file = fopen('INTEL_P_toro.graph');                       % INTEL
+%data_file = fopen ('M3500_P_toro.graph');                      % M3500
 %data_file = fopen ('CSAIL_P_toro.graph');                       % CSAIL MIT
 %data_file= fopen('M10000_P_toro.graph');                      % M10000
 input_line = fgetl(data_file);
