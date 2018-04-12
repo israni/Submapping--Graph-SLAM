@@ -4,9 +4,11 @@ close all;
 import gtsam.*
 
 %% Set these variables
-num_submaps = 6;
-% num_points_total = 1200; % total # of points in dataset        INTEL
+num_submaps = 10;
+%num_points_total = 1200; % total # of points in dataset        INTEL
 num_points_total = 3500; % total # of points in dataset          M3500
+%num_points_total = 1044; % total # of points in dataset          CSAIL MIT
+%num_points_total = 10000; % total # of points in dataset         M10000
 
 num_points_submap = ceil(num_points_total / num_submaps);
 separator_nodes = zeros(1,num_points_total);
@@ -27,7 +29,10 @@ base_vertex = -1 * ones(1,num_submaps);
 
 %% Parse data and add factors
 %data_file = fopen('INTEL_P_toro.graph');                      % INTEL
-data_file = fopen ('M3500_P_toro.graph');                      % M3500
+data_file = fopen ('M3500_P_toro.graph');                     % M3500
+%data_file = fopen ('CSAIL_P_toro.graph');                     % CSAIL MIT
+%data_file= fopen('M10000_P_toro.graph');                      % M10000
+
 input_line = fgetl(data_file);
 
 while ischar(input_line)
@@ -126,7 +131,7 @@ for i = 1:num_submaps
     tic
     optimizer = gtsam.DoglegOptimizer(graph(i), initial_estimate(i), parameters);
     result = optimizer.optimizeSafely();
-    variable= toc
+    variable= toc;
     time = time + variable;
     keys = KeyVector(result.keys());
     
@@ -139,18 +144,20 @@ for i = 1:num_submaps
         all_submap_results(4,results_idx) = result.at(key).theta();
         results_idx = results_idx + 1;
     end
-    
-    if (num_submaps == 2)
-        subplot(ceil(num_submaps/2),2,i);
-    else
-        subplot(ceil(num_submaps/2),ceil(num_submaps/2),i);
-    end
+    if (num_submaps <= 100)
+        if (num_submaps == 2)
+            subplot(ceil(num_submaps/2),2,i);
+        else
+            subplot(ceil(sqrt(num_submaps)),ceil(sqrt(num_submaps)),i);
+        end
     plot2DTrajectory(result);
     title_str = sprintf("Submap %i",i);
     title(title_str);
     axis equal
     axis tight
     view(2)
+    end
+
 end
 
 % % optimize and plot separator
@@ -183,8 +190,10 @@ end
 
 
 %% Parse data and add factors
-%data_file = fopen('INTEL_P_toro.graph');
-data_file = fopen ('M3500_P_toro.graph');
+%data_file = fopen('INTEL_P_toro.graph');                       % INTEL
+data_file = fopen ('M3500_P_toro.graph');                      % M3500
+%data_file = fopen ('CSAIL_P_toro.graph');                       % CSAIL MIT
+%data_file= fopen('M10000_P_toro.graph');                      % M10000
 input_line = fgetl(data_file);
 
 %% Create NEW graph container and add factors to it
@@ -258,10 +267,10 @@ fclose(data_file);
 %graph_new.print(sprintf('\nFactor graph:\n'));
 
 %% Optimize using Levenberg-Marquardt optimization with an ordering from colamd
-%tic
+tic
 optimizer = LevenbergMarquardtOptimizer(graph_new, initialEstimate_new);
 result = optimizer.optimizeSafely();
-%time = time+toc
+time = time+toc
 %result.print(sprintf('\nFinal result:\n'));
 
 %parameters = DoglegParams();

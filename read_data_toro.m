@@ -3,7 +3,11 @@ close all;
 
 import gtsam.*
 
-data_file = fopen('INTEL_P_toro.graph');
+%data_file = fopen('INTEL_P_toro.graph'); % INTEL
+data_file = fopen('M3500_P_toro.graph'); % M3500
+%data_file = fopen ('CSAIL_P_toro.graph');                       % CSAIL MIT
+%data_file = fopen('M10000_P_toro.graph');
+
 input_line = fgetl(data_file);
 
 %% Create graph container and add factors to it
@@ -12,7 +16,11 @@ initialEstimate = Values;
 
 noise = zeros(3);
 
-numPoints = 1200;
+% numPoints = 1200;       % INTEL
+ numPoints = 3500;       % M3500
+% numPoints = 1044;         % CSAIL MIT
+%numPoints = 10000;
+
 x_all = [];
 y_all=[];
 
@@ -77,7 +85,7 @@ fclose(data_file);
 priorNoise = noiseModel.Diagonal.Sigmas([0.3; 0.3; 0.1]);
 graph.add(PriorFactorPose2(0, Pose2(0, 0, 0), priorNoise)); % add directly to graph
 
-graph.print(sprintf('\nFactor graph:\n'));
+%graph.print(sprintf('\nFactor graph:\n'));
 
 %% Optimize using Levenberg-Marquardt optimization with an ordering from colamd
 %optimizer = LevenbergMarquardtOptimizer(graph, initialEstimate);
@@ -96,7 +104,7 @@ optimizer = gtsam.DoglegOptimizer(graph, initialEstimate, parameters);
 % and optimize
 result = optimizer.optimizeSafely();
 time = toc
-result.print(sprintf('\nFinal result:\n'));
+%result.print(sprintf('\nFinal result:\n'));
 
 %% Plot Covariance Ellipses
 plot (x_all,y_all,'o')
