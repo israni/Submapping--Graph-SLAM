@@ -48,11 +48,11 @@ while ischar(input_line)
             information_matrix(1,1)= str2num(split_line{7});
             information_matrix(1,2)= str2num(split_line{8});
             information_matrix(1,3)= str2num(split_line{9});
-            information_matrix(2,1)= str2num(split_line{8});
+            %information_matrix(2,1)= str2num(split_line{8});
             information_matrix(2,2)= str2num(split_line{10});
             information_matrix(2,3)= str2num(split_line{11});
-            information_matrix(3,1)= str2num(split_line{9});
-            information_matrix(3,2)= str2num(split_line{11});
+            %information_matrix(3,1)= str2num(split_line{9});
+            %information_matrix(3,2)= str2num(split_line{11});
             information_matrix(3,3)= str2num(split_line{12});
 
             chol_information_matrix = sqrtm(information_matrix);

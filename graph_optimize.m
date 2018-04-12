@@ -4,7 +4,7 @@ close all;
 import gtsam.*
 
 %% Set these variables
-num_submaps = 2;
+num_submaps = 8;
 num_points_total = 1200; % total # of points in dataset
 num_points_submap = ceil(num_points_total / num_submaps);
 separator_nodes = zeros(1,num_points_total);
@@ -254,22 +254,24 @@ fclose(data_file);
 %graph_new.print(sprintf('\nFactor graph:\n'));
 
 %% Optimize using Levenberg-Marquardt optimization with an ordering from colamd
+%tic
 optimizer = LevenbergMarquardtOptimizer(graph_new, initialEstimate_new);
 result = optimizer.optimizeSafely();
+%time = time+toc
 %result.print(sprintf('\nFinal result:\n'));
 
 %parameters = DoglegParams();
-
+%tic
 % Stop iterating once the change in error between steps is less than this value
-%parameters.setRelativeErrorTol(1e-5);
+%parameters.setRelativeErrorTol(1e-10);
 % Do not perform more than N iteration steps
-%parameters.setMaxIterations(1000);
+%parameters.setMaxIterations(1000000);
 % Create the optimizer ...
 %optimizer = gtsam.DoglegOptimizer(graph_new, initialEstimate_new, parameters);
 % and optimize
-result = optimizer.optimizeSafely();
+%result = optimizer.optimizeSafely();
 %result.print(sprintf('\nFinal result:\n'));
-
+%time=time+toc
 %% Plot Covariance Ellipses
 %cla;
 %hold on  
