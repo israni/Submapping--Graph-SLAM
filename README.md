@@ -7,6 +7,7 @@ We use the GTSAM MATLAB toolbox (https://borg.cc.gatech.edu/) to solve the back-
 **How to Use**
 
 *Set up*
+
 In MATLAB, navigate to the base directory. If running in Windows, right-click 'gtsam_toolbox_windows' and select 'Add to Path > Selected Folders' (NOT 'Selected Folders and Subfolders'). If in Linux, choose the 'gtsam_toolbox_windows'. Mac users can download the Mac version of the MATLAB toolbox from the provided link in the About section. Also add the 'Datasets' folder to the path.
 
 *Using read_data_toro.m -- no submapping*
@@ -24,7 +25,7 @@ Outputs:
 - Submap optimizations
 - Final map
 
-///
+/////////////
 
 Group 13 consists of the following members:
 - Sagar Israni: israni@umich.edu
