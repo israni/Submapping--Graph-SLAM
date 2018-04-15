@@ -42,39 +42,31 @@ base_vertex = -1 * ones(1,num_submaps);
 data_file = fopen(file_name);
 input_line = fgetl(data_file);
 
-% initializing size doesn't really matter because there are more edges than
-% nodes
-information_matrix = zeros(3,3,num_points_total);
-odometry = zeros(num_points_total,3);
-vertices = zeros(num_points_total,2);
-edge_idx = 1;
-
 while ischar(input_line)
     split_line = strsplit(input_line);
     
     %% ADD EDGES TO GRAPH - ODOMETRY AND POSE CONTRAINTS %%
     if (strcmp(split_line{1},'EDGE2'))
-        vertices(edge_idx,1) = str2double(split_line{2});
-        vertices(edge_idx,2) = str2double(split_line{3});
-        if (vertices(edge_idx,1) < num_points_total && vertices(edge_idx,2) < num_points_total)
-            odometry(edge_idx,:) = ([str2double(split_line{4}),str2double(split_line{5}),str2double(split_line{6})]);
+        vertex_id_1 = str2double(split_line{2});
+        vertex_id_2 = str2double(split_line{3});
+        if (vertex_id_1 < num_points_total && vertex_id_2 < num_points_total)
+            odometry = ([str2double(split_line{4}),str2double(split_line{5}),str2double(split_line{6})]);
             dx = odometry(1);
             dy = odometry(2);
             dtheta = odometry(3);
 
-            information_matrix(1,1,edge_idx)= str2double(split_line{7});
-            information_matrix(1,2,edge_idx)= str2double(split_line{8});
-            information_matrix(2,2,edge_idx)= str2double(split_line{9});
-            information_matrix(3,3,edge_idx)= str2double(split_line{10});
-            information_matrix(1,3,edge_idx)= str2double(split_line{11});
-            information_matrix(2,3,edge_idx)= str2double(split_line{12});
-            information_matrix(2,1,edge_idx)= str2double(split_line{8});
-            information_matrix(3,1,edge_idx)= str2double(split_line{11});
-            information_matrix(3,2,edge_idx)= str2double(split_line{12});
+            information_matrix(1,1)= str2double(split_line{7});
+            information_matrix(1,2)= str2double(split_line{8});
+            information_matrix(2,2)= str2double(split_line{9});
+            information_matrix(3,3)= str2double(split_line{10});
+            information_matrix(1,3)= str2double(split_line{11});
+            information_matrix(2,3)= str2double(split_line{12});
+            information_matrix(2,1)= str2double(split_line{8});
+            information_matrix(3,1)= str2double(split_line{11});
+            information_matrix(3,2)= str2double(split_line{12});
 
-            chol_information_matrix = sqrtm(information_matrix(:,:,edge_idx));
+            chol_information_matrix = sqrtm(information_matrix);
             model = noiseModel.Gaussian.SqrtInformation(chol_information_matrix);
-            edge_idx = edge_idx + 1;
             
             submap_idx_1 = floor(vertex_id_1 / num_points_submap) + 1;
             submap_idx_2 = floor(vertex_id_2 / num_points_submap) + 1;
@@ -102,14 +94,7 @@ while ischar(input_line)
                 base_pose(2,submap_idx) = y;
                 base_pose(3,submap_idx) = theta;
                 base_vertex(submap_idx) = vertex_id;
-%                 separator_estimate.insert(vertex_id, Pose2(x,y,theta));
             end
-            
-            % add inter-measurement nodes but don't double count base nodes
-%             if (separator_nodes(vertex_id+1) == 1 && base_vertex(submap_idx) ~= vertex_id)
-%             if (separator_nodes(vertex_id+1) == 1)
-%                 separator_estimate.insert(vertex_id, Pose2(x,y,theta));
-%             end
         end
     end
     
@@ -208,17 +193,17 @@ while ischar(input_line)
             dy = odometry(2);
             dtheta = odometry(3);
 
-%             information_matrix(1,1)= str2double(split_line{7});
-%             information_matrix(1,2)= str2double(split_line{8});
-%             information_matrix(2,2)= str2double(split_line{9});
-%             information_matrix(3,3)= str2double(split_line{10});
-%             information_matrix(1,3)= str2double(split_line{11});
-%             information_matrix(2,3)= str2double(split_line{12});
-%             information_matrix(2,1)= str2double(split_line{8});
-%             information_matrix(3,1)= str2double(split_line{11});
-%             information_matrix(3,2)= str2double(split_line{12});
+            information_matrix(1,1)= str2double(split_line{7});
+            information_matrix(1,2)= str2double(split_line{8});
+            information_matrix(2,2)= str2double(split_line{9});
+            information_matrix(3,3)= str2double(split_line{10});
+            information_matrix(1,3)= str2double(split_line{11});
+            information_matrix(2,3)= str2double(split_line{12});
+            information_matrix(2,1)= str2double(split_line{8});
+            information_matrix(3,1)= str2double(split_line{11});
+            information_matrix(3,2)= str2double(split_line{12});
 
-            chol_information_matrix = sqrtm(information_matrix(:,:,edge_idx));
+            chol_information_matrix = sqrtm(information_matrix);
             model = noiseModel.Gaussian.SqrtInformation(chol_information_matrix);
             edge_idx = edge_idx + 1;
             
@@ -226,9 +211,6 @@ while ischar(input_line)
             submap_idx_2 = floor(vertex_id_2 / num_points_submap) + 1;
             if (submap_idx_1 == submap_idx_2) % non-boundary node
                 model = noiseModel.Gaussian.SqrtInformation([1 0 0; 0 1 0; 0 0 1] );
-                %dx = all_submap_results(2,vertex_id_2+1)-all_submap_results(2,vertex_id_1+1);
-                %dy = all_submap_results(3,vertex_id_2+1)-all_submap_results(2,vertex_id_1+1);
-                %dtheta = all_submap_results(4,vertex_id_2+1)-all_submap_results(2,vertex_id_1+1);
                 graph_new.add(BetweenFactorPose2(vertex_id_1, vertex_id_2, Pose2(dx, dy, minimizedAngle(dtheta)), model));
             else % boundary node
                 graph_new.add(BetweenFactorPose2(vertex_id_1, vertex_id_2, Pose2(dx, dy, minimizedAngle(dtheta)), model));
