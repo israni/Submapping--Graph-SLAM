@@ -3,10 +3,23 @@ close all;
 
 import gtsam.*
 
-%data_file = fopen('INTEL_P_toro.graph'); % INTEL
-%data_file = fopen('M3500_P_toro.graph'); % M3500
-data_file = fopen ('CSAIL_P_toro.graph');                       % CSAIL MIT
+%% Select the data set and corresponding number of points
+
+% INTEL
+%data_file = fopen('INTEL_P_toro.graph');
+%num_points = 1200; 
+
+% M3500
+%data_file = fopen('M3500_P_toro.graph');
+%num_points = 3500; 
+
+% M10000
 %data_file = fopen('M10000_P_toro.graph');
+%num_points = 10000;
+
+% CSAIL
+data_file = fopen ('CSAIL_P_toro.graph');                       % CSAIL MIT
+num_points = 1044;
 
 input_line = fgetl(data_file);
 
@@ -15,11 +28,6 @@ graph = NonlinearFactorGraph;
 initialEstimate = Values;
 
 noise = zeros(3);
-
-%numPoints = 1200;       % INTEL
-%numPoints = 3500;       % M3500
-numPoints = 1044;         % CSAIL MIT
-%numPoints = 10000;
 
 x_all = [];
 y_all=[];
@@ -31,7 +39,7 @@ while ischar(input_line)
     %% ADD VERTICES TO GRAPH - INITIAL ESTIMATE%%
     if (strcmp(split_line{1},'VERTEX2'))
         vertex_id = str2num(split_line{2});
-        if (vertex_id <= numPoints)
+        if (vertex_id <= num_points)
             vertex_location = ([str2num(split_line{3}),str2num(split_line{4}),str2num(split_line{5})]);
             x = vertex_location(1);
             y = vertex_location(2);
@@ -47,7 +55,7 @@ while ischar(input_line)
     if (strcmp(split_line{1},'EDGE2'))
         vertex_id_1 = str2num(split_line{2});
         vertex_id_2 = str2num(split_line{3});
-        if (vertex_id_1 <= numPoints && vertex_id_2 <= numPoints)
+        if (vertex_id_1 <= num_points && vertex_id_2 <= num_points)
             odometry = ([str2num(split_line{4}),str2num(split_line{5}),str2num(split_line{6})]);
             dx = odometry(1);
             dy = odometry(2);
@@ -93,8 +101,8 @@ graph.add(PriorFactorPose2(0, Pose2(0, 0, 0), priorNoise)); % add directly to gr
 %result.print(sprintf('\nFinal result:\n'));
 
 parameters = DoglegParams();
-
-% Stop iterating once the change in error between steps is less than this value
+.
+% Stop iterating Covariance Ellipsesonce the change in error between steps is less than this value
 parameters.setRelativeErrorTol(1e-5);
 % Do not perform more than N iteration steps
 parameters.setMaxIterations(1000);
@@ -106,16 +114,12 @@ result = optimizer.optimizeSafely();
 time = toc
 %result.print(sprintf('\nFinal result:\n'));
 
-%% Plot Covariance Ellipses
+%% Plot Final 
 plot (x_all,y_all,'o')
-figure,
+figure
 hold on  
-% plot([result.at(5).x;result.at(2).x],[result.at(5).y;result.at(2).y],'r-');
-% marginals = Marginals(graph, result);
 
-% plot2DTrajectory(result, [], marginals);
 plot2DTrajectory(result);
-% for i=1:5,marginals.marginalCovariance(i),end
 axis equal
 axis tight
 view(2)
