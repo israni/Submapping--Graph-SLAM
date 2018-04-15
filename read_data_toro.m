@@ -6,8 +6,8 @@ import gtsam.*
 %% Select the data set and corresponding number of points
 
 % INTEL
-%data_file = fopen('INTEL_P_toro.graph');
-%num_points = 1200; 
+data_file = fopen('INTEL_P_toro.graph');
+num_points = 1200; 
 
 % M3500
 %data_file = fopen('M3500_P_toro.graph');
@@ -18,8 +18,8 @@ import gtsam.*
 %num_points = 10000;
 
 % CSAIL
-data_file = fopen ('CSAIL_P_toro.graph');                       % CSAIL MIT
-num_points = 1044;
+% data_file = fopen ('CSAIL_P_toro.graph');                       % CSAIL MIT
+% num_points = 1044;
 
 input_line = fgetl(data_file);
 
@@ -95,7 +95,7 @@ graph.add(PriorFactorPose2(0, Pose2(0, 0, 0), priorNoise)); % add directly to gr
 %% Optimize using Levenberg-Marquardt optimization
 
 parameters = DoglegParams();
-.
+
 % Stop iterating Covariance Ellipsesonce the change in error between steps is less than this value
 parameters.setRelativeErrorTol(1e-5);
 % Do not perform more than N iteration steps
