@@ -89,16 +89,10 @@ end
 
 fclose(data_file);
 %% Add prior
-% priorNoise = noiseModel.Gaussian.SqrtInformation(noise);
 priorNoise = noiseModel.Diagonal.Sigmas([0.3; 0.3; 0.1]);
 graph.add(PriorFactorPose2(0, Pose2(0, 0, 0), priorNoise)); % add directly to graph
 
-%graph.print(sprintf('\nFactor graph:\n'));
-
-%% Optimize using Levenberg-Marquardt optimization with an ordering from colamd
-%optimizer = LevenbergMarquardtOptimizer(graph, initialEstimate);
-%result = optimizer.optimizeSafely();
-%result.print(sprintf('\nFinal result:\n'));
+%% Optimize using Levenberg-Marquardt optimization
 
 parameters = DoglegParams();
 .
@@ -112,7 +106,6 @@ optimizer = gtsam.DoglegOptimizer(graph, initialEstimate, parameters);
 % and optimize
 result = optimizer.optimizeSafely();
 time = toc
-%result.print(sprintf('\nFinal result:\n'));
 
 %% Plot Final 
 plot (x_all,y_all,'o')
